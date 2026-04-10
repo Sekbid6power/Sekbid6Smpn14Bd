@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sekbid 6 OSIS</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #0369a1, #38bdf8);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+}
+
+/* Container */
+.wrapper {
+    max-width: 360px;
+    margin: auto;
+    padding: 20px 15px;
+}
+
+/* Judul Sekbid 6 */
+h1 {
+    text-transform: uppercase;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Grid */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+}
+
+/* Poster Card */
+.poster-card {
+    position: relative;
+    border-radius: 22px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+}
+
+.poster-card:active {
+    transform: scale(0.96);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Gambar */
+.poster-img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.poster-card:hover .poster-img {
+    transform: scale(1.05);
+}
+
+/* Ripple */
+.poster-card span {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s ease-out;
+    background: rgba(255,255,255,0.25);
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* Judul di card */
+.desc-box {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Modal overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal content */
+.modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 320px;
+    width: 90%;
+    padding: 16px;
+    text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    animation: popUp 0.3s ease;
+}
+
+@keyframes popUp {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Modal image */
+.modal-content img {
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    margin-bottom: 12px;
+}
+
+/* Close button */
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Modal text */
+.modal-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.modal-date {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <img src="img/logo.jpg" class="logo">
+    <span class="text-white">Sekbid 6</span>
+</div>
+
+<div class="wrapper">
+<h1>SEKBID 6</h1>
+
+<div id="grid" class="grid-container"></div>
+</div>
+
+<!-- Modal Pop-up -->
+<div id="modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-close" onclick="closeModal()">✕</div>
+        <img id="modal-img" src="">
+        <h3 class="modal-title" id="modal-title"></h3>
+        <p class="modal-desc" id="modal-desc"></p>
+        <p class="modal-date" id="modal-date"></p>
+    </div>
+</div>
+
+<script>
+// Format tanggal
+function formatDate(dateStr){
+    const bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    if(!dateStr.includes('-') || dateStr.includes('tidak') || dateStr.includes('tidaktahu')) return '';
+    const d = new Date(dateStr);
+    return d.getDate() + " " + bulan[d.getMonth()] + " " + d.getFullYear();
+}
+
+// 20 poster
+const posters = [
+{ title:"Selamat Hari Ibu", desc:"Hari Ibu adalah hari untuk menghargai dan menghormati peran ibu dalam keluarga, masyarakat, dan perjuangan bangsa.", date:"2025-12-22", img:"img/poster1.png" },
+{ title:"Selamar Hari Natal", desc:"Hari Natal adalah hari raya umat Kristen untuk memperingati kelahiran Yesus Kristus sebagai Juru Selamat.", date:"2025-12-25", img:"img/poster2.png" },
+{ title:"Selamat Tahun Baru", desc:"Tahun Baru adalah perayaan untuk menandai pergantian tahun dan awal tahun yang baru.", date:"2026-01-01", img:"img/poster3.png" },
+{ title:"Selamat Memperingati Isra Mi'raj", desc:"Isra Mi’raj adalah peristiwa perjalanan Nabi Muhammad SAW yang menerima perintah salat.", date:"2026-01-16", img:"img/poster4.png" },
+{ title:"Kegiatan Isra Mi'raj", desc:"Kegiatan Isra Mi’raj adalah aktivitas keagamaan untuk memperingati peristiwa perjalanan Nabi Muhammad SAW dan mengambil hikmahnya.", date:"2026-tidak", img:"img/poster5.png" },
+{ title:"Selamat Hari Pers Nasional", desc:"Hari Pers Nasional adalah hari menghargai peran pers dalam menyebarkan informasi dan mendukung pembangunan Indonesia.", date:"2026-02-09", img:"img/poster6.png" },
+{ title:"Selamat Tahun Baru Imlek", desc:"Pergantian tahun baru Tionghoa, momen kumpul keluarga dan harapan keberuntungan.", date:"2026-02-17", img:"img/poster7.png" },
+{ title:"Selamat Menunaikan Ibadah Puasa", desc:"Menahan makan, minum, dan hal tertentu dari fajar sampai maghrib sebagai ibadah.", date:"2026-02-19", img:"img/poster8.png" },
+{ title:"Acara Pesantren Kilat", desc:"Kegiatan belajar agama Islam singkat, biasanya diadakan saat libur, untuk menambah ilmu dan ibadah.", date:"2026-tidaktahu", img:"img/poster9.png" },
+{ title:"Satu Kebaikan di Bulan Ramadhan", desc:"Memberi harta atau bantuan kepada yang membutuhkan sebagai amal ibadah, pahalanya lebih besar di bulan suci.", date:"2026-08-tidak", img:"img/poster10.png" },
+{ title:"Terimakasih Untuk Semua Warga SMPN 14 Bandar Lampung", desc:"Terima kasih dari OSIS SMPN 14 Bandar Lampung untuk seluruh warga SMPN 14 Bandar Lampung atas dukungan dan kerjasamanya. Semoga kebersamaan kita terus terjaga!", date:"2025-08-tidak", img:"img/poster11.png" },
+{ title:"Selamat Hari Raya Idul Fitri", desc:"Hari raya umat Islam yang dirayakan setelah sebulan berpuasa Ramadan, sebagai tanda kemenangan diri dan momen saling memaafkan.", date:"2026-03-21", img:"img/poster12.png" },
+{ title:"Selamat Hari Raya Nyepi", desc:"Hari raya umat Hindu di Bali untuk menyucikan diri, ditandai dengan berdiam diri, tidak bekerja, dan refleksi diri.", date:"2026-03-19", img:"img/poster13.png" },
+{ title:"Selamat Hari Film Nasional", desc:"Hari untuk menghargai dan memajukan industri perfilman Indonesia, serta mengenang karya dan jasa sineas bangsa.", date:"2026-03-30", img:"img/poster14.png" },
+{ title:"Selamat Memperingati Wafat Isa Al-Masih", desc:"Hari mengenang wafat atau naiknya Isa Al-Masih (Yesus Kristus) menurut ajaran Kristen, sebagai momen refleksi dan penghormatan", date:"2026-04-03", img:"img/poster15.png" },
+{ title:"Selamat Hari Raya Paskah", desc:"Hari raya umat Kristen yang merayakan kebangkitan Isa Al-Masih (Yesus Kristus) setelah wafatnya, simbol kemenangan hidup atas dosa dan kematian.", date:"2026-04-05", img:"img/poster16.png" },
+{ title:"Acara Pentas Seni Teater (Long Sleepy You Just)", desc:"Pertunjukan drama atau teater yang diselenggarakan untuk menampilkan kreativitas, bakat, dan seni para peserta di bidang akting, musik, dan tari.", date:"2026-04-20", img:"img/poster17.png" },
+{ title:"Poster 18", desc:"Deskripsi poster 18", date:"2025-08-18", img:"img/poster18.png" },
+{ title:"Poster 19", desc:"Deskripsi poster 19", date:"2025-08-19", img:"img/poster19.png" },
+{ title:"Poster 20", desc:"Deskripsi poster 20", date:"2025-08-20", img:"img/poster20.png" }
+];
+
+function render(){
+    const grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    posters.forEach((p,i)=>{
+        const el = document.createElement("div");
+        el.className="poster-card";
+
+        el.innerHTML=`
+        <img src="${p.img}" class="poster-img">
+        <div class="desc-box">
+            <h3 class="font-bold mb-1">${p.title}</h3>
+        </div>
+        `;
+
+        el.onclick=(e)=>{
+            ripple(e, el);
+            openModal(i);
+        };
+
+        grid.appendChild(el);
+    });
+}
+
+// Ripple effect
+function ripple(e,el){
+    const span=document.createElement("span");
+    const rect=el.getBoundingClientRect();
+
+    span.style.left=(e.clientX-rect.left)+"px";
+    span.style.top=(e.clientY-rect.top)+"px";
+
+    el.appendChild(span);
+    setTimeout(()=>span.remove(),500);
+}
+
+// Modal functions
+function openModal(index){
+    const poster = posters[index];
+    document.getElementById("modal-img").src = poster.img;
+    document.getElementById("modal-title").innerText = poster.title;
+    document.getElementById("modal-desc").innerText = poster.desc;
+    document.getElementById("modal-date").innerText = formatDate(poster.date);
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal(e){
+    document.getElementById("modal").style.display = "none";
+}
+
+render();
+</script>
+</body>
+</html>
